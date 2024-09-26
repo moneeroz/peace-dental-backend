@@ -5,7 +5,9 @@ import { db } from "../db/drizzle.js";
 import { user } from "../db/schema.js";
 import { eq } from "drizzle-orm";
 
-require("dotenv").config();
+import { config } from "dotenv";
+
+config();
 
 type dbUser = {
   id: string;
