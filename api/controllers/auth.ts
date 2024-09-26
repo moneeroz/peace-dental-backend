@@ -4,7 +4,6 @@ import jwt from "jsonwebtoken";
 import { db } from "../db/drizzle.js";
 import { user } from "../db/schema.js";
 import { eq } from "drizzle-orm";
-
 import { config } from "dotenv";
 
 config();
