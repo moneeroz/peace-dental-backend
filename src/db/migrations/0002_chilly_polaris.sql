@@ -1,0 +1,1 @@
+ALTER TABLE "appointment" ALTER COLUMN "appointment_date" SET DATA TYPE timestamp;

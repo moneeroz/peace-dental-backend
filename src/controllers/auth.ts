@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { db } from "../db/drizzle.js";
@@ -39,30 +39,39 @@ export const genToken = async (req: Request, res: Response) => {
     process.env.JWT_REFRESH,
     async (err: any, token_user: any) => {
       if (err) {
-        return res.sendStatus(403);
+        return res.sendStatus(401);
       }
+      // console.log(token_user);
+      try {
+        const RefreshToken = refreshToken.toString();
+        const data = await db
+          .select({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            refreshToken: user.refreshToken,
+          })
+          .from(user)
+          .where(eq(token_user.id, user.id));
 
-      const data = await db
-        .select()
-        .from(user)
-        .where(eq(refreshToken, user.refreshToken));
+        if (data[0] && data[0].refreshToken !== refreshToken) {
+          return res.status(401).json({ message: "Invalid token" });
+        }
 
-      if (!data) {
-        return res.status(403).json({ message: "Invalid token" });
+        const currentUser = {
+          id: data[0].id,
+          name: data[0].name,
+          email: data[0].email,
+          role: data[0].role,
+        };
+
+        const token = generateToken(currentUser);
+        res.json({ ...currentUser, token, refreshToken });
+      } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Failed to generate token" });
       }
-      if (data[0].id == undefined) {
-        return res.status(403).json({ message: "Invalid token" });
-      }
-
-      const currentUser = {
-        id: data[0].id,
-        name: data[0].name,
-        email: data[0].email,
-        role: data[0].role,
-      };
-
-      const token = generateToken(currentUser);
-      res.json({ ...currentUser, token, refreshToken });
     },
   );
 };
