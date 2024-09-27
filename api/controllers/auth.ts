@@ -50,7 +50,7 @@ export const genToken = async (req: Request, res: Response) => {
       if (!data) {
         return res.status(403).json({ message: "Invalid token" });
       }
-      if (!data[0].id == undefined) {
+      if (data[0].id == undefined) {
         return res.status(403).json({ message: "Invalid token" });
       }
 
