@@ -50,6 +50,9 @@ export const genToken = async (req: Request, res: Response) => {
       if (!data) {
         return res.status(403).json({ message: "Invalid token" });
       }
+      if (!data[0].id) {
+        return res.status(403).json({ message: "Invalid token" });
+      }
 
       const currentUser = {
         id: data[0].id,
